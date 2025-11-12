@@ -1,0 +1,155 @@
+#!/usr/bin/env bash
+
+# ProbeGenerator - Simple command-line wrapper
+# Usage: ./probegen config.txt
+
+set -e
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Display banner
+echo "=========================================="
+echo "ProbeGenerator - FISH Probe Design Tool"
+echo "=========================================="
+echo ""
+
+# Check for config file
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 <config_file>"
+    echo ""
+    echo "Example: $0 my_config.txt"
+    echo ""
+    echo "For a template config file, see: config.example.txt"
+    exit 1
+fi
+
+CONFIG_FILE="$1"
+
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "ERROR: Config file not found: $CONFIG_FILE"
+    exit 1
+fi
+
+# Load configuration
+echo "Loading configuration from $CONFIG_FILE..."
+source "$CONFIG_FILE"
+
+# Set defaults
+L=${L:-25}
+U=${U:-25}
+G=${G:-20}
+MAX_G=${MAX_G:-80}
+T_MIN=${T_MIN:-37}
+T_MAX=${T_MAX:-72}
+S=${S:-1000}
+F=${F:-30}
+DESIRED_SPACES=${DESIRED_SPACES:-3}
+
+# Validate required parameters
+if [ -z "$SEQ_FILE" ] || [ -z "$GENOME_INDEX" ] || [ -z "$INITIATORS_FILE" ]; then
+    echo "ERROR: Missing required parameters in config file"
+    echo "Required: SEQ_FILE, GENOME_INDEX, INITIATORS_FILE"
+    exit 1
+fi
+
+# Determine paths
+WORK_DIR="$(pwd)"
+OLIGOMINER_DIR="$SCRIPT_DIR/OligoMiner"
+PROBEGEN_DIR="$SCRIPT_DIR/probegenerator_src/probegenerator"
+
+# Check if tools exist
+if [ ! -d "$OLIGOMINER_DIR" ]; then
+    echo "ERROR: OligoMiner not found at $OLIGOMINER_DIR"
+    exit 1
+fi
+
+if [ ! -d "$PROBEGEN_DIR" ]; then
+    echo "ERROR: probegenerator not found at $PROBEGEN_DIR"
+    exit 1
+fi
+
+# Check for required commands
+for cmd in python3 bowtie2; do
+    if ! command -v $cmd &> /dev/null; then
+        echo "ERROR: $cmd not found. Please install it first."
+        echo "  conda install -c bioconda bowtie2 biopython pysam"
+        exit 1
+    fi
+done
+
+echo ""
+echo "Configuration:"
+echo "  Input sequence: $SEQ_FILE"
+echo "  Genome index: $GENOME_INDEX"
+echo "  Initiators: $INITIATORS_FILE"
+echo "  Output: output/"
+echo ""
+
+# Clean and create output directory
+if [ -d "output" ]; then
+    echo "Removing existing output directory..."
+    rm -rf output
+fi
+mkdir -p output
+
+# Step 1: Parse multifasta
+echo "Step 1: Parsing input FASTA..."
+python3 "$PROBEGEN_DIR/parseMultifasta.py" -f "$SEQ_FILE"
+
+# Process each gene
+while read -r fasta; do
+    gene_name=(${fasta//\// })
+    echo ""
+    echo "Processing gene: ${gene_name[1]}"
+
+    # Step 2: OligoMiner blockParse
+    echo "  Step 2: Running OligoMiner blockParse..."
+    python3 "$OLIGOMINER_DIR/blockParse.py" \
+        -f "${fasta}.fa" \
+        -l $L -L $U -g $G -G $MAX_G \
+        -t $T_MIN -T $T_MAX -s $S -F $F \
+        -O -b -o output/output
+
+    # Step 3: Generate probes
+    echo "  Step 3: Generating probes..."
+    python3 "$PROBEGEN_DIR/probeGenerator.py" \
+        -p output/output.bed \
+        -f "${fasta}.fa" \
+        -s $DESIRED_SPACES \
+        -if "$INITIATORS_FILE"
+
+    # Step 4: Bowtie2 alignment (memory-mapped)
+    echo "  Step 4: Running Bowtie2 alignment (memory-mapped mode)..."
+    bowtie2 --mm \
+        -x "$GENOME_INDEX" \
+        -U probes_for_alignment.fastq \
+        -t -k 100 --very-sensitive-local \
+        -S "${gene_name[1]}.sam"
+
+    # Step 5: Clean output
+    echo "  Step 5: Cleaning output..."
+    python3 "$OLIGOMINER_DIR/outputClean.py" \
+        -u -f "${gene_name[1]}.sam" \
+        -o "${gene_name[1]}"
+
+    # Step 6: Copy files to initiator directories
+    echo "  Step 6: Organizing output files..."
+    python3 "$PROBEGEN_DIR/utils/file_copy_utils.py" \
+        -i "$INITIATORS_FILE" \
+        -n "${gene_name[1]}"
+
+    # Step 7: Parse BAM and generate final probes
+    echo "  Step 7: Parsing alignments and generating final probes..."
+    python3 "$PROBEGEN_DIR/parseBam.py" \
+        -p "${gene_name[1]}/${gene_name[1]}_probes.csv" \
+        -p2 "${gene_name[1]}/${gene_name[1]}" \
+        -i "$INITIATORS_FILE"
+
+    echo "  Complete!"
+done < names.txt
+
+echo ""
+echo "=========================================="
+echo "Probe generation complete!"
+echo "=========================================="
+echo "Results are in the 'output' directory"

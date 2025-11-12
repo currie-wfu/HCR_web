@@ -1,0 +1,16 @@
+name: probegenerator
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python=3.11
+  - bowtie2
+  - biopython
+  - pysam
+  - numpy
+  - scipy
+  - scikit-learn
+  - pip
+  - pip:
+    - future

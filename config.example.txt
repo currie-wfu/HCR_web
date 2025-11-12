@@ -1,0 +1,41 @@
+# ProbeGenerator Configuration File
+# Copy this file to config.txt and edit with your settings
+
+# Required Parameters
+# -------------------
+
+# Input FASTA file (relative to /data/input in Docker, or current directory for local)
+SEQ_FILE=Sp8.fa
+
+# Bowtie2 genome index basename (without .bt2 extension)
+GENOME_INDEX=GCF_040938575.1_UKY_AmexF1_1_genomic_long.fna
+
+# Initiators CSV file with HCR sequences
+INITIATORS_FILE=initiators.csv
+
+
+# Optional Parameters - Probe Design
+# -----------------------------------
+
+# Probe length range
+L=25          # Minimum probe length
+U=25          # Maximum probe length
+
+# GC content range (percentage)
+G=20          # Minimum GC content
+MAX_G=80      # Maximum GC content
+
+# Melting temperature range (Celsius)
+T_MIN=37      # Minimum Tm
+T_MAX=72      # Maximum Tm
+
+# Spacing and filtering
+S=1000        # Maximum spacing between probe pairs
+F=30          # Maximum formamide concentration
+DESIRED_SPACES=3  # Number of spacer nucleotides between probe halves
+
+
+# Notes
+# -----
+# For Docker: Place your genome index files in a directory to mount at /data/genome
+# For local: Place genome index files in the same directory as this config file

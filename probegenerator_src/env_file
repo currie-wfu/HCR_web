@@ -1,0 +1,13 @@
+seq_path=Mouse.fa
+path_to_bowtie_index=mouse_genome
+bowtie_index_basename=mouse_genome
+initiator=initiators.csv
+desired_spaces=3
+l=25
+L=25
+g=20
+G=80
+t=37
+T=72
+s=1000
+F=30

@@ -5,8 +5,8 @@
 A tool for designing FISH (Fluorescence In Situ Hybridization) probes with HCR (Hybridization Chain Reaction) initiator sequences. This version has been updated from Python 2 to Python 3 and includes memory-mapped Bowtie2 support for large genomes.
 
 ## 🤝 Contributing
-- This iteration of the HCR Probe generator is directly adapted from David Stein’s probe generator (https://github.com/davidfstein/probegenerator) and James Monaghan’s lab at Northeastern University.
-- If you are using this with Bowtie indexes for the axolotl genome (UKY_AmexF1_1, https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_040938575.1/), the files provided were created and contributed by Sean Keeley and Rita Aires from Tatiana Sandoval-Guzmán’s lab at the CRTD Dresden.
+- This iteration of the HCR Probe generator is directly adapted from David Stein’s probe generator (https://github.com/davidfstein/probegenerator) in collaboration with James Monaghan’s lab at Northeastern University.
+- Bowtie index files for the axolotl genome (UKY_AmexF1_1, https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_040938575.1/) that were used to test this tool were created and contributed by Sean Keeley and Rita Aires from Tatiana Sandoval-Guzmán’s lab at the CRTD Dresden. Axoltol bowtie indices are large (>50GB) and can be provided upon request.
 - This tool was built with AI-assisted coding.
 
 ## 🔬 Scientific Background

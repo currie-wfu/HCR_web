@@ -5,7 +5,7 @@
 A tool for designing FISH (Fluorescence In Situ Hybridization) probes with HCR (Hybridization Chain Reaction) initiator sequences. This version has been updated from Python 2 to Python 3 and includes memory-mapped Bowtie2 support for large genomes.
 
 ## 🤝 Contributing
-- This iteration of the HCR Probe generator is directly adapted from David Stein’s probe generator (https://github.com/davidfstein/probegenerator) in collaboration with James Monaghan’s lab at Northeastern University.
+- This iteration of the HCR Probe generator is directly adapted from David Stein’s probe generator (https://github.com/davidfstein/probegenerator), which was built and supported in James Monaghan’s lab at Northeastern University.
 - Bowtie index files for the axolotl genome (UKY_AmexF1_1, https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_040938575.1/) that were used to test this tool were created and contributed by Sean Keeley and Rita Aires from Tatiana Sandoval-Guzmán’s lab at the CRTD Dresden. Axoltol bowtie indices are large (>50GB) and can be provided upon request.
 - This tool was built with AI-assisted coding.
 
@@ -34,7 +34,6 @@ Default values are optimized for standard HCR-FISH:
 - ✅ Fixed deprecated file modes (`'rU'` → `'r'`)
 - ✅ Updated Biopython imports (removed `Bio.Alphabet`, updated `GC` function)
 - ✅ Fixed `exec()` scoping issues with `getattr()`
-- ✅ All hardcoded Docker paths now work locally
 
 ### Memory-Mapped Bowtie2
 - ✅ Added `--mm` flag for large genome indexes (e.g., 52GB Axolotl genome)
@@ -62,7 +61,6 @@ Default values are optimized for standard HCR-FISH:
   - 3' UTR
 - Ready-to-order CSV output
 - Batch processing for multiple genes
-
 
 ## 🚀 Quick Start Web Interface - Easy Launch Guide
 
@@ -116,6 +114,9 @@ brew install bowtie2
 # Install OligoMiner (once)
 pip3 install biopython
 ```
+# Install Streamlit (once)
+pip install streamlit
+```
 
 **Windows:**
 ```batch
@@ -124,6 +125,9 @@ pip3 install biopython
 
 # Install OligoMiner (in Command Prompt)
 pip install biopython
+```
+# Install Streamlit (once)
+pip install streamlit
 ```
 
 ## Customization

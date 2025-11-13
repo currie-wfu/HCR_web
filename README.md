@@ -92,6 +92,7 @@ These launchers:
 2. Install prerequisites:
    - **Python 3.8+** ([python.org/downloads](https://www.python.org/downloads/))
    - **Bowtie2** ([Installation guide](http://bowtie-bio.sourceforge.net/bowtie2/))
+   - **Streamlit** ([Installation guide](https://streamlit.io/))
    - **OligoMiner tools** (instructions in main README)
 3. Double-click the launcher for your OS (*.command for MacOS and *.bat for Windows)
 4. Done!
@@ -113,7 +114,7 @@ brew install bowtie2
 
 # Install OligoMiner (once)
 pip3 install biopython
-```
+
 # Install Streamlit (once)
 pip install streamlit
 ```
@@ -121,13 +122,14 @@ pip install streamlit
 **Windows:**
 ```batch
 # Install Python from python.org
+
 # Install Bowtie2 from the official website
+
+# install Streamlit
+pip install streamlit
 
 # Install OligoMiner (in Command Prompt)
 pip install biopython
-```
-# Install Streamlit (once)
-pip install streamlit
 ```
 
 ## Customization
